@@ -18,6 +18,7 @@
       --shadow: 0 6px 24px rgba(59,130,246,0.13), 0 1.5px 4px rgba(0,0,0,0.18);
       --shadow-menu: 0 10px 32px 2px rgba(59,130,246,0.10), 0 1.5px 6px rgba(0,0,0,0.20);
       --menu-hover: #31394a;
+      --backdrop: rgba(24,28,32,0.7);
     }
     html, body {
       height: 100%;
@@ -150,6 +151,68 @@
       background: var(--primary-dark);
       color: #fff;
     }
+    /* Modal Styles */
+    #dataModal {
+      display: none;
+      position: fixed;
+      z-index: 2000;
+      left: 0; top: 0; width: 100vw; height: 100vh;
+      background: var(--backdrop);
+      align-items: center;
+      justify-content: center;
+    }
+    #dataModal.active {
+      display: flex;
+    }
+    #dataModal .modal-content {
+      background: var(--surface-light);
+      color: var(--text);
+      padding: 32px 28px 20px 28px;
+      border-radius: 10px;
+      box-shadow: var(--shadow-menu);
+      max-width: 380px;
+      width: 98vw;
+      text-align: center;
+      border: 1px solid var(--border);
+      animation: fadeInMenu 0.15s;
+    }
+    #dataModal .modal-content p {
+      margin: 0 0 18px 0;
+      font-size: 1.08rem;
+      color: var(--danger);
+      line-height: 1.6;
+    }
+    #dataModal .modal-content .modal-btns {
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+    }
+    #dataModal .modal-content button {
+      padding: 8px 24px;
+      border-radius: 7px;
+      border: none;
+      font-size: 1.07rem;
+      cursor: pointer;
+      transition: background 0.18s, color 0.18s;
+      margin-top: 8px;
+    }
+    #dataModal .modal-content .yes-btn {
+      background: var(--primary);
+      color: #fff;
+    }
+    #dataModal .modal-content .yes-btn:hover {
+      background: var(--primary-dark);
+    }
+    #dataModal .modal-content .no-btn {
+      background: var(--surface);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    #dataModal .modal-content .no-btn:hover {
+      background: var(--danger);
+      color: white;
+      border-color: var(--danger);
+    }
     @media (max-width: 600px) {
       nav {
         flex-direction: column;
@@ -166,8 +229,10 @@
         min-width: unset;
         width: 95vw;
       }
+      #dataModal .modal-content {
+        padding: 20px 10px 10px 10px;
+      }
     }
-    /* Light mode styles (applied by JS if needed) */
     html[data-theme="light"] {
       --primary: #3b82f6;
       --primary-dark: #2563eb;
@@ -179,6 +244,7 @@
       --danger: #e53e3e;
       --border: #e0e7ef;
       --menu-hover: #f2f7fc;
+      --backdrop: rgba(220,225,240,0.8);
     }
     html[data-theme="light"] nav {
       box-shadow: 0 2px 5px #0001;
@@ -237,6 +303,23 @@
     </div>
   </div>
   <h2>Do not share this chatroom, it could get blocked</h2>
+
+  <!-- Modal for data: URL redirect -->
+  <div id="dataModal">
+    <div class="modal-content">
+      <p>
+        <b>Warning:</b> You will be redirected to a new tab using a <code>data:</code> URL.<br>
+        You will have to open this site again.<br>
+        <br>
+        <span style="color:var(--text-soft);font-size:0.97em;">Do you want to continue?</span>
+      </p>
+      <div class="modal-btns">
+        <button class="yes-btn">Yes</button>
+        <button class="no-btn">No</button>
+      </div>
+    </div>
+  </div>
+
   <script>
     // Theme Switch (localStorage)
     const themeToggle = document.getElementById('themeToggle');
@@ -256,6 +339,39 @@
       let isDark = document.documentElement.getAttribute('data-theme') === 'dark';
       setTheme(!isDark);
     };
+
+    // Modal logic
+    let pendingDataUrl = null;
+    function showDataModal(dataUrl) {
+      pendingDataUrl = dataUrl;
+      document.getElementById('dataModal').classList.add('active');
+      // Focus Yes button for accessibility
+      document.querySelector('#dataModal .yes-btn').focus();
+    }
+    function hideDataModal() {
+      pendingDataUrl = null;
+      document.getElementById('dataModal').classList.remove('active');
+    }
+    document.addEventListener("DOMContentLoaded", function(){
+      document.querySelectorAll('#dataModal .yes-btn').forEach(btn => {
+        btn.onclick = function() {
+          if(pendingDataUrl) {
+            window.location.href = pendingDataUrl;
+          }
+          hideDataModal();
+        };
+      });
+      document.querySelectorAll('#dataModal .no-btn').forEach(btn => {
+        btn.onclick = function() {
+          hideDataModal();
+        };
+      });
+      document.addEventListener('keydown', function(e){
+        if(document.getElementById('dataModal').classList.contains('active') && e.key === 'Escape'){
+          hideDataModal();
+        }
+      });
+    });
 
     document.addEventListener("DOMContentLoaded", function(){
       document.querySelectorAll('.chatroom-link').forEach(function(link) {
@@ -295,26 +411,8 @@
             .then(resp => resp.text())
             .then(html => {
               const dataUrl = 'data:text/html;charset=utf-8,' + encodeURIComponent(html);
-              // Create a new tab and set its location to the data URL using window.open + window.location
-              // This avoids about:blank overlay in some browsers
-              const win = window.open();
-              if(win){
-                try {
-                  win.opener = null;
-                  win.location = dataUrl;
-                } catch(e) {
-                  // fallback if blocked
-                  const a = document.createElement('a');
-                  a.href = dataUrl;
-                  a.target = '_blank';
-                  a.rel = 'noopener noreferrer';
-                  document.body.appendChild(a);
-                  a.click();
-                  setTimeout(()=>a.remove(),200);
-                }
-              } else {
-                alert("Popup blocked. Please allow popups for this site.");
-              }
+              // Show modal dialog before redirecting!
+              showDataModal(dataUrl);
               menu.style.display = 'none';
             }).catch(()=>{alert("Could not fetch content for data: link.");menu.style.display="none";});
         };
