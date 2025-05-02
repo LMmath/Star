@@ -212,6 +212,7 @@
       <button class="menu-btn aboutblank">Open in <b>about:blank</b></button>
       <button class="menu-btn blob">Open in <b>blob:</b></button>
       <button class="menu-btn data">Open in <b>data:</b></button>
+      <button class="menu-btn originalurl">Open Original URL</button>
     </div>
   </div>
   <div class="chat-link-container">
@@ -220,6 +221,7 @@
       <button class="menu-btn aboutblank">Open in <b>about:blank</b></button>
       <button class="menu-btn blob">Open in <b>blob:</b></button>
       <button class="menu-btn data">Open in <b>data:</b></button>
+      <button class="menu-btn originalurl">Open Original URL</button>
     </div>
   </div>
   <div class="chat-link-container">
@@ -228,6 +230,7 @@
       <button class="menu-btn aboutblank">Open in <b>about:blank</b></button>
       <button class="menu-btn blob">Open in <b>blob:</b></button>
       <button class="menu-btn data">Open in <b>data:</b></button>
+      <button class="menu-btn originalurl">Open Original URL</button>
     </div>
   </div>
   <h2>Do not share this chatroom, it could get blocked</h2>
@@ -294,15 +297,25 @@
           fetch(url)
             .then(resp => resp.text())
             .then(html => {
-              // Some browsers block data: URLs with window.open directly, so use an <a> hack
+              // Note: data: URL navigation is heavily restricted in modern browsers
+              // data:// is not a valid scheme for browsers, only data: works
+              // We'll attempt to open with an <a> click, but fallback to about:blank if blocked
               const dataUrl = 'data:text/html;charset=utf-8,' + encodeURIComponent(html);
               const a = document.createElement('a');
               a.href = dataUrl;
               a.target = '_blank';
               a.rel = 'noopener noreferrer';
+              // Try to open
+              document.body.appendChild(a);
               a.click();
+              setTimeout(()=>a.remove(),200);
               menu.style.display = 'none';
             }).catch(()=>{alert("Could not fetch content for data: link.");menu.style.display="none";});
+        };
+        menu.querySelector('.originalurl').onclick = function(ev){
+          ev.stopPropagation();
+          window.open(url, '_blank', 'noopener');
+          menu.style.display = 'none';
         };
       }
       // Hide menu on document click or Esc
