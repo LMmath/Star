@@ -1,43 +1,60 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <title>Chatroom</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
   <style>
-    body {
-      font-family: 'Segoe UI', Arial, sans-serif;
-      background: #f7f9fa;
+    :root {
+      --primary: #3b82f6;
+      --primary-dark: #2563eb;
+      --background: #181c20;
+      --surface: #23272e;
+      --surface-light: #262c33;
+      --text: #e6eaf5;
+      --text-soft: #b3bad4;
+      --danger: #e53e3e;
+      --border: #2d3341;
+      --shadow: 0 6px 24px rgba(59,130,246,0.13), 0 1.5px 4px rgba(0,0,0,0.18);
+      --shadow-menu: 0 10px 32px 2px rgba(59,130,246,0.10), 0 1.5px 6px rgba(0,0,0,0.20);
+      --menu-hover: #31394a;
+    }
+    html, body {
+      height: 100%;
       margin: 0;
       padding: 0;
-      color: #222;
+      background: var(--background);
+      color: var(--text);
+      font-family: 'Segoe UI', Arial, sans-serif;
+      min-height: 100vh;
     }
     nav {
-      background: #222;
+      background: var(--surface);
       padding: 0.5rem 0;
       margin-bottom: 24px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.04);
+      box-shadow: var(--shadow);
       display: flex;
       justify-content: center;
       gap: 25px;
     }
     nav a {
-      color: #fff;
+      color: var(--text-soft);
       text-decoration: none;
       font-weight: 500;
       font-size: 1rem;
       padding: 8px 16px;
       border-radius: 4px;
-      transition: background 0.2s;
+      transition: background 0.2s, color 0.2s;
     }
     nav a:hover, nav a.active {
-      background: #3b82f6;
+      background: var(--primary);
       color: #fff;
     }
     h1 {
       text-align: center;
       margin-top: 20px;
       letter-spacing: 1px;
-      color: #2d3748;
+      color: var(--text);
     }
     .chat-link-container {
       display: flex;
@@ -48,7 +65,7 @@
       position: relative;
     }
     .chatroom-link {
-      background: #3b82f6;
+      background: var(--primary);
       color: #fff;
       font-weight: 500;
       text-decoration: none;
@@ -56,15 +73,15 @@
       border-radius: 6px;
       font-size: 1.07rem;
       transition: background 0.2s, box-shadow 0.2s;
-      box-shadow: 0 2px 4px rgba(59,130,246,0.06);
+      box-shadow: 0 2px 4px #0003;
       cursor: pointer;
       border: none;
       outline: none;
       display: inline-block;
     }
     .chatroom-link:hover, .chatroom-link:focus {
-      background: #2563eb;
-      box-shadow: 0 3px 8px rgba(59,130,246,0.13);
+      background: var(--primary-dark);
+      box-shadow: 0 3px 8px var(--primary-dark);
     }
     .menu {
       display: none;
@@ -72,10 +89,10 @@
       top: 48px;
       left: 0;
       min-width: 210px;
-      background: #fff;
+      background: var(--surface-light);
       border-radius: 8px;
-      box-shadow: 0 6px 24px rgba(59,130,246,0.13), 0 1.5px 4px rgba(0,0,0,0.07);
-      border: 1px solid #e0e7ef;
+      box-shadow: var(--shadow-menu);
+      border: 1px solid var(--border);
       z-index: 1000;
       animation: fadeInMenu 0.12s;
     }
@@ -91,7 +108,7 @@
       outline: none;
       padding: 14px 22px;
       font-size: 1rem;
-      color: #222;
+      color: var(--text);
       cursor: pointer;
       border-radius: 8px 8px 0 0;
       text-align: left;
@@ -101,20 +118,38 @@
       border-radius: 0 0 8px 8px;
     }
     .menu button:hover, .menu button:focus {
-      background: #eef2fa;
-      color: #3b82f6;
+      background: var(--menu-hover);
+      color: var(--primary);
     }
     .menu button:not(:last-child) {
-      border-bottom: 1px solid #f2f5fa;
+      border-bottom: 1px solid var(--border);
     }
     h2 {
-      color: #e53e3e;
+      color: var(--danger);
       text-align: center;
       margin-top: 40px;
       letter-spacing: 0.5px;
       font-size: 1.15rem;
     }
-
+    .dark-toggle {
+      position: fixed;
+      right: 18px;
+      top: 18px;
+      background: var(--surface-light);
+      color: var(--text);
+      border: none;
+      border-radius: 100px;
+      padding: 7px 18px;
+      cursor: pointer;
+      font-size: 1rem;
+      z-index: 1100;
+      box-shadow: 0 2px 6px #0004;
+      transition: background 0.18s;
+    }
+    .dark-toggle:hover {
+      background: var(--primary-dark);
+      color: #fff;
+    }
     @media (max-width: 600px) {
       nav {
         flex-direction: column;
@@ -132,86 +167,37 @@
         width: 95vw;
       }
     }
+    /* Light mode styles (applied by JS if needed) */
+    html[data-theme="light"] {
+      --primary: #3b82f6;
+      --primary-dark: #2563eb;
+      --background: #f7f9fa;
+      --surface: #f0f4fa;
+      --surface-light: #fff;
+      --text: #222c38;
+      --text-soft: #506077;
+      --danger: #e53e3e;
+      --border: #e0e7ef;
+      --menu-hover: #f2f7fc;
+    }
+    html[data-theme="light"] nav {
+      box-shadow: 0 2px 5px #0001;
+    }
+    html[data-theme="light"] .chatroom-link {
+      box-shadow: 0 2px 4px #3b82f610;
+    }
+    html[data-theme="light"] .dark-toggle {
+      background: #f2f7fc;
+      color: var(--text);
+    }
+    html[data-theme="light"] .dark-toggle:hover {
+      background: var(--primary);
+      color: #fff;
+    }
   </style>
-  <script>
-    document.addEventListener("DOMContentLoaded", function(){
-      // Attach handlers to all chatroom links
-      document.querySelectorAll('.chatroom-link').forEach(function(link) {
-        link.addEventListener('click', function(e){
-          e.preventDefault();
-          showMenu(link);
-        });
-      });
-
-      function showMenu(link) {
-        // Hide all menus
-        document.querySelectorAll('.menu').forEach(function(menu) {
-          menu.style.display = 'none';
-        });
-
-        // Show the menu for this link, positioned under the link
-        const menu = link.nextElementSibling;
-        menu.style.display = 'block';
-
-        // Optional: ensure menu doesn't overflow viewport
-        const rect = menu.getBoundingClientRect();
-        if(rect.right > window.innerWidth) {
-          menu.style.left = (window.innerWidth - rect.width - 16) + 'px';
-        }
-
-        // Focus first button for accessibility
-        menu.querySelector('button').focus();
-
-        // Handle menu button actions
-        const url = link.getAttribute('data-href');
-        menu.querySelector('.aboutblank').onclick = function(ev){
-          ev.stopPropagation();
-          window.open(url, '_blank');
-          menu.style.display = 'none';
-        };
-        menu.querySelector('.blob').onclick = function(ev){
-          ev.stopPropagation();
-          fetch(url)
-            .then(resp => resp.text())
-            .then(html => {
-              const blob = new Blob([html], {type:'text/html'});
-              const blobUrl = URL.createObjectURL(blob);
-              window.open(blobUrl, '_blank');
-              menu.style.display = 'none';
-            }).catch(()=>{alert("Could not fetch content for blob: link.");menu.style.display="none";});
-        };
-        menu.querySelector('.data').onclick = function(ev){
-          ev.stopPropagation();
-          fetch(url)
-            .then(resp => resp.text())
-            .then(html => {
-              const dataUrl = 'data:text/html;charset=utf-8,' + encodeURIComponent(html);
-              window.open(dataUrl, '_blank');
-              menu.style.display = 'none';
-            }).catch(()=>{alert("Could not fetch content for data: link.");menu.style.display="none";});
-        };
-      }
-
-      // Hide menu on document click or Esc
-      document.addEventListener('click', function(e) {
-        // Only hide if click is outside a menu or link
-        if (![...e.composedPath()].some(el => el && (el.classList && (el.classList.contains('menu') || el.classList.contains('chatroom-link'))))) {
-          document.querySelectorAll('.menu').forEach(function(menu) {
-            menu.style.display = 'none';
-          });
-        }
-      });
-      document.addEventListener('keydown', function(e){
-        if(e.key === 'Escape'){
-          document.querySelectorAll('.menu').forEach(function(menu) {
-            menu.style.display = 'none';
-          });
-        }
-      });
-    });
-  </script>
 </head>
 <body>
+  <button class="dark-toggle" id="themeToggle" title="Toggle light/dark mode">🌙 Dark Mode</button>
   <nav>
     <a href="index.html" target="_blank" rel="noopener noreferrer">Home</a>
     <a href="g.html" target="_blank" rel="noopener noreferrer">Games</a>
@@ -245,5 +231,115 @@
     </div>
   </div>
   <h2>Do not share this chatroom, it could get blocked</h2>
+  <script>
+    // Theme Switch (localStorage)
+    const themeToggle = document.getElementById('themeToggle');
+    function setTheme(dark) {
+      document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+      themeToggle.innerHTML = dark ? "☀️ Light Mode" : "🌙 Dark Mode";
+      localStorage.setItem('theme', dark ? 'dark' : 'light');
+    }
+    // On load, detect preference
+    (function(){
+      let theme = localStorage.getItem('theme');
+      if(!theme) {
+        theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      }
+      setTheme(theme === 'dark');
+    })();
+    themeToggle.onclick = function() {
+      let isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+      setTheme(!isDark);
+    };
+
+    document.addEventListener("DOMContentLoaded", function(){
+      // Attach handlers to all chatroom links
+      document.querySelectorAll('.chatroom-link').forEach(function(link) {
+        link.addEventListener('click', function(e){
+          e.preventDefault();
+          showMenu(link);
+        });
+      });
+
+      function showMenu(link) {
+        // Hide all menus
+        document.querySelectorAll('.menu').forEach(function(menu) {
+          menu.style.display = 'none';
+        });
+        // Show the menu for this link, positioned under the link
+        const menu = link.nextElementSibling;
+        menu.style.display = 'block';
+        // Focus first button for accessibility
+        menu.querySelector('button').focus();
+        // Handle menu button actions
+        const url = link.getAttribute('data-href');
+        menu.querySelector('.aboutblank').onclick = function(ev){
+          ev.stopPropagation();
+          openInAboutBlank(url);
+          menu.style.display = 'none';
+        };
+        menu.querySelector('.blob').onclick = function(ev){
+          ev.stopPropagation();
+          fetch(url)
+            .then(resp => resp.text())
+            .then(html => {
+              const blob = new Blob([html], {type:'text/html'});
+              const blobUrl = URL.createObjectURL(blob);
+              window.open(blobUrl, '_blank');
+              menu.style.display = 'none';
+            }).catch(()=>{alert("Could not fetch content for blob: link.");menu.style.display="none";});
+        };
+        menu.querySelector('.data').onclick = function(ev){
+          ev.stopPropagation();
+          fetch(url)
+            .then(resp => resp.text())
+            .then(html => {
+              // Some browsers block data: URLs with window.open directly, so use an <a> hack
+              const dataUrl = 'data:text/html;charset=utf-8,' + encodeURIComponent(html);
+              const a = document.createElement('a');
+              a.href = dataUrl;
+              a.target = '_blank';
+              a.rel = 'noopener noreferrer';
+              a.click();
+              menu.style.display = 'none';
+            }).catch(()=>{alert("Could not fetch content for data: link.");menu.style.display="none";});
+        };
+      }
+      // Hide menu on document click or Esc
+      document.addEventListener('click', function(e) {
+        if (![...e.composedPath()].some(el => el && (el.classList && (el.classList.contains('menu') || el.classList.contains('chatroom-link'))))) {
+          document.querySelectorAll('.menu').forEach(function(menu) {
+            menu.style.display = 'none';
+          });
+        }
+      });
+      document.addEventListener('keydown', function(e){
+        if(e.key === 'Escape'){
+          document.querySelectorAll('.menu').forEach(function(menu) {
+            menu.style.display = 'none';
+          });
+        }
+      });
+    });
+
+    // Opens content in about:blank and injects the content (works for same-origin only)
+    function openInAboutBlank(url) {
+      fetch(url)
+        .then(resp => resp.text())
+        .then(html => {
+          const win = window.open('about:blank', '_blank');
+          if (win) {
+            win.document.open();
+            win.document.write(html);
+            win.document.close();
+          } else {
+            alert("Popup blocked. Please allow popups for this site.");
+          }
+        })
+        .catch(() => {
+          window.open(url, '_blank'); // fallback
+        });
+    }
+  </script>
 </body>
 </html>
