@@ -212,6 +212,7 @@
       <button class="menu-btn aboutblank">Open in <b>about:blank</b></button>
       <button class="menu-btn blob">Open in <b>blob:</b></button>
       <button class="menu-btn data">Open in <b>data:</b></button>
+      <button class="menu-btn copydataurl">Copy Data URL</button>
       <button class="menu-btn originalurl">Open Original URL</button>
     </div>
   </div>
@@ -221,6 +222,7 @@
       <button class="menu-btn aboutblank">Open in <b>about:blank</b></button>
       <button class="menu-btn blob">Open in <b>blob:</b></button>
       <button class="menu-btn data">Open in <b>data:</b></button>
+      <button class="menu-btn copydataurl">Copy Data URL</button>
       <button class="menu-btn originalurl">Open Original URL</button>
     </div>
   </div>
@@ -230,6 +232,7 @@
       <button class="menu-btn aboutblank">Open in <b>about:blank</b></button>
       <button class="menu-btn blob">Open in <b>blob:</b></button>
       <button class="menu-btn data">Open in <b>data:</b></button>
+      <button class="menu-btn copydataurl">Copy Data URL</button>
       <button class="menu-btn originalurl">Open Original URL</button>
     </div>
   </div>
@@ -242,7 +245,6 @@
       themeToggle.innerHTML = dark ? "☀️ Light Mode" : "🌙 Dark Mode";
       localStorage.setItem('theme', dark ? 'dark' : 'light');
     }
-    // On load, detect preference
     (function(){
       let theme = localStorage.getItem('theme');
       if(!theme) {
@@ -256,7 +258,6 @@
     };
 
     document.addEventListener("DOMContentLoaded", function(){
-      // Attach handlers to all chatroom links
       document.querySelectorAll('.chatroom-link').forEach(function(link) {
         link.addEventListener('click', function(e){
           e.preventDefault();
@@ -265,16 +266,12 @@
       });
 
       function showMenu(link) {
-        // Hide all menus
         document.querySelectorAll('.menu').forEach(function(menu) {
           menu.style.display = 'none';
         });
-        // Show the menu for this link, positioned under the link
         const menu = link.nextElementSibling;
         menu.style.display = 'block';
-        // Focus first button for accessibility
         menu.querySelector('button').focus();
-        // Handle menu button actions
         const url = link.getAttribute('data-href');
         menu.querySelector('.aboutblank').onclick = function(ev){
           ev.stopPropagation();
@@ -297,20 +294,40 @@
           fetch(url)
             .then(resp => resp.text())
             .then(html => {
-              // Note: data: URL navigation is heavily restricted in modern browsers
-              // data:// is not a valid scheme for browsers, only data: works
-              // We'll attempt to open with an <a> click, but fallback to about:blank if blocked
               const dataUrl = 'data:text/html;charset=utf-8,' + encodeURIComponent(html);
-              const a = document.createElement('a');
-              a.href = dataUrl;
-              a.target = '_blank';
-              a.rel = 'noopener noreferrer';
-              // Try to open
-              document.body.appendChild(a);
-              a.click();
-              setTimeout(()=>a.remove(),200);
+              // Create a new tab and set its location to the data URL using window.open + window.location
+              // This avoids about:blank overlay in some browsers
+              const win = window.open();
+              if(win){
+                try {
+                  win.opener = null;
+                  win.location = dataUrl;
+                } catch(e) {
+                  // fallback if blocked
+                  const a = document.createElement('a');
+                  a.href = dataUrl;
+                  a.target = '_blank';
+                  a.rel = 'noopener noreferrer';
+                  document.body.appendChild(a);
+                  a.click();
+                  setTimeout(()=>a.remove(),200);
+                }
+              } else {
+                alert("Popup blocked. Please allow popups for this site.");
+              }
               menu.style.display = 'none';
             }).catch(()=>{alert("Could not fetch content for data: link.");menu.style.display="none";});
+        };
+        menu.querySelector('.copydataurl').onclick = function(ev){
+          ev.stopPropagation();
+          fetch(url)
+            .then(resp => resp.text())
+            .then(html => {
+              const dataUrl = 'data:text/html;charset=utf-8,' + encodeURIComponent(html);
+              navigator.clipboard.writeText(dataUrl);
+              alert("Data URL copied! Paste it into a new tab's address bar if you want.");
+              menu.style.display = 'none';
+            });
         };
         menu.querySelector('.originalurl').onclick = function(ev){
           ev.stopPropagation();
@@ -318,7 +335,6 @@
           menu.style.display = 'none';
         };
       }
-      // Hide menu on document click or Esc
       document.addEventListener('click', function(e) {
         if (![...e.composedPath()].some(el => el && (el.classList && (el.classList.contains('menu') || el.classList.contains('chatroom-link'))))) {
           document.querySelectorAll('.menu').forEach(function(menu) {
@@ -335,7 +351,6 @@
       });
     });
 
-    // Opens content in about:blank and injects the content (works for same-origin only)
     function openInAboutBlank(url) {
       fetch(url)
         .then(resp => resp.text())
@@ -350,7 +365,7 @@
           }
         })
         .catch(() => {
-          window.open(url, '_blank'); // fallback
+          window.open(url, '_blank');
         });
     }
   </script>
