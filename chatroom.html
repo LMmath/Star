@@ -1,21 +1,249 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    
-  </head>
+<head>
+  <meta charset="UTF-8">
+  <title>Chatroom</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: #f7f9fa;
+      margin: 0;
+      padding: 0;
+      color: #222;
+    }
+    nav {
+      background: #222;
+      padding: 0.5rem 0;
+      margin-bottom: 24px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.04);
+      display: flex;
+      justify-content: center;
+      gap: 25px;
+    }
+    nav a {
+      color: #fff;
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 1rem;
+      padding: 8px 16px;
+      border-radius: 4px;
+      transition: background 0.2s;
+    }
+    nav a:hover, nav a.active {
+      background: #3b82f6;
+      color: #fff;
+    }
+    h1 {
+      text-align: center;
+      margin-top: 20px;
+      letter-spacing: 1px;
+      color: #2d3748;
+    }
+    .chat-link-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 16px 0;
+      gap: 10px;
+      position: relative;
+    }
+    .chatroom-link {
+      background: #3b82f6;
+      color: #fff;
+      font-weight: 500;
+      text-decoration: none;
+      padding: 12px 22px;
+      border-radius: 6px;
+      font-size: 1.07rem;
+      transition: background 0.2s, box-shadow 0.2s;
+      box-shadow: 0 2px 4px rgba(59,130,246,0.06);
+      cursor: pointer;
+      border: none;
+      outline: none;
+      display: inline-block;
+    }
+    .chatroom-link:hover, .chatroom-link:focus {
+      background: #2563eb;
+      box-shadow: 0 3px 8px rgba(59,130,246,0.13);
+    }
+    .menu {
+      display: none;
+      position: absolute;
+      top: 48px;
+      left: 0;
+      min-width: 210px;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 6px 24px rgba(59,130,246,0.13), 0 1.5px 4px rgba(0,0,0,0.07);
+      border: 1px solid #e0e7ef;
+      z-index: 1000;
+      animation: fadeInMenu 0.12s;
+    }
+    @keyframes fadeInMenu {
+      from { opacity: 0; transform: translateY(-8px);}
+      to { opacity: 1; transform: translateY(0);}
+    }
+    .menu button {
+      display: block;
+      width: 100%;
+      background: none;
+      border: none;
+      outline: none;
+      padding: 14px 22px;
+      font-size: 1rem;
+      color: #222;
+      cursor: pointer;
+      border-radius: 8px 8px 0 0;
+      text-align: left;
+      transition: background 0.18s, color 0.18s;
+    }
+    .menu button:last-child {
+      border-radius: 0 0 8px 8px;
+    }
+    .menu button:hover, .menu button:focus {
+      background: #eef2fa;
+      color: #3b82f6;
+    }
+    .menu button:not(:last-child) {
+      border-bottom: 1px solid #f2f5fa;
+    }
+    h2 {
+      color: #e53e3e;
+      text-align: center;
+      margin-top: 40px;
+      letter-spacing: 0.5px;
+      font-size: 1.15rem;
+    }
+
+    @media (max-width: 600px) {
+      nav {
+        flex-direction: column;
+        gap: 5px;
+        padding: 0.5rem 0.5rem;
+      }
+      .chat-link-container {
+        flex-direction: column;
+        gap: 2px;
+      }
+      .menu {
+        left: 0;
+        right: 0;
+        min-width: unset;
+        width: 95vw;
+      }
+    }
+  </style>
+  <script>
+    document.addEventListener("DOMContentLoaded", function(){
+      // Attach handlers to all chatroom links
+      document.querySelectorAll('.chatroom-link').forEach(function(link) {
+        link.addEventListener('click', function(e){
+          e.preventDefault();
+          showMenu(link);
+        });
+      });
+
+      function showMenu(link) {
+        // Hide all menus
+        document.querySelectorAll('.menu').forEach(function(menu) {
+          menu.style.display = 'none';
+        });
+
+        // Show the menu for this link, positioned under the link
+        const menu = link.nextElementSibling;
+        menu.style.display = 'block';
+
+        // Optional: ensure menu doesn't overflow viewport
+        const rect = menu.getBoundingClientRect();
+        if(rect.right > window.innerWidth) {
+          menu.style.left = (window.innerWidth - rect.width - 16) + 'px';
+        }
+
+        // Focus first button for accessibility
+        menu.querySelector('button').focus();
+
+        // Handle menu button actions
+        const url = link.getAttribute('data-href');
+        menu.querySelector('.aboutblank').onclick = function(ev){
+          ev.stopPropagation();
+          window.open(url, '_blank');
+          menu.style.display = 'none';
+        };
+        menu.querySelector('.blob').onclick = function(ev){
+          ev.stopPropagation();
+          fetch(url)
+            .then(resp => resp.text())
+            .then(html => {
+              const blob = new Blob([html], {type:'text/html'});
+              const blobUrl = URL.createObjectURL(blob);
+              window.open(blobUrl, '_blank');
+              menu.style.display = 'none';
+            }).catch(()=>{alert("Could not fetch content for blob: link.");menu.style.display="none";});
+        };
+        menu.querySelector('.data').onclick = function(ev){
+          ev.stopPropagation();
+          fetch(url)
+            .then(resp => resp.text())
+            .then(html => {
+              const dataUrl = 'data:text/html;charset=utf-8,' + encodeURIComponent(html);
+              window.open(dataUrl, '_blank');
+              menu.style.display = 'none';
+            }).catch(()=>{alert("Could not fetch content for data: link.");menu.style.display="none";});
+        };
+      }
+
+      // Hide menu on document click or Esc
+      document.addEventListener('click', function(e) {
+        // Only hide if click is outside a menu or link
+        if (![...e.composedPath()].some(el => el && (el.classList && (el.classList.contains('menu') || el.classList.contains('chatroom-link'))))) {
+          document.querySelectorAll('.menu').forEach(function(menu) {
+            menu.style.display = 'none';
+          });
+        }
+      });
+      document.addEventListener('keydown', function(e){
+        if(e.key === 'Escape'){
+          document.querySelectorAll('.menu').forEach(function(menu) {
+            menu.style.display = 'none';
+          });
+        }
+      });
+    });
+  </script>
+</head>
+<body>
   <nav>
-<a href="index.html" target="_blank" rel="noopener noreferrer">Home</a>
-<a href="g.html" target="_blank" rel="noopener noreferrer">Games</a>
-<a href="p.html" target="_blank" rel="noopener noreferrer">Proxy</a>
-<a href="Blogs.html" target="_blank" rel="noopener noreferrer">Blogs</a>
-<a href="chatroom.html" target="_blank" rel="noopener noreferrer">Chatroom</a>
-</nav>
-  <body>
-    <h1>Chatroom</h1>
-    <a href="Chat/iframe.html">ChatRoom Method 1 (Might be Blocked)</a>
-    <a href="Chat/index.html">ChatRoom Method 2</a>
-    <a href="Chat/icon.html">Chatroom Method 3</a>
-    <h2>Do not share this chatroom, it could get blocked</h2>
- 
+    <a href="index.html" target="_blank" rel="noopener noreferrer">Home</a>
+    <a href="g.html" target="_blank" rel="noopener noreferrer">Games</a>
+    <a href="p.html" target="_blank" rel="noopener noreferrer">Proxy</a>
+    <a href="Blogs.html" target="_blank" rel="noopener noreferrer">Blogs</a>
+    <a href="chatroom.html" target="_blank" rel="noopener noreferrer" class="active">Chatroom</a>
+  </nav>
+  <h1>Chatroom</h1>
+  <div class="chat-link-container">
+    <a href="Chat/iframe.html" data-href="Chat/iframe.html" class="chatroom-link">ChatRoom Method 1 (Might be Blocked)</a>
+    <div class="menu" tabindex="-1">
+      <button class="menu-btn aboutblank">Open in <b>about:blank</b></button>
+      <button class="menu-btn blob">Open in <b>blob:</b></button>
+      <button class="menu-btn data">Open in <b>data:</b></button>
+    </div>
+  </div>
+  <div class="chat-link-container">
+    <a href="Chat/index.html" data-href="Chat/index.html" class="chatroom-link">ChatRoom Method 2</a>
+    <div class="menu" tabindex="-1">
+      <button class="menu-btn aboutblank">Open in <b>about:blank</b></button>
+      <button class="menu-btn blob">Open in <b>blob:</b></button>
+      <button class="menu-btn data">Open in <b>data:</b></button>
+    </div>
+  </div>
+  <div class="chat-link-container">
+    <a href="Chat/icon.html" data-href="Chat/icon.html" class="chatroom-link">Chatroom Method 3</a>
+    <div class="menu" tabindex="-1">
+      <button class="menu-btn aboutblank">Open in <b>about:blank</b></button>
+      <button class="menu-btn blob">Open in <b>blob:</b></button>
+      <button class="menu-btn data">Open in <b>data:</b></button>
+    </div>
+  </div>
+  <h2>Do not share this chatroom, it could get blocked</h2>
 </body>
 </html>
