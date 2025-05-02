@@ -213,6 +213,123 @@
       color: white;
       border-color: var(--danger);
     }
+    /* Download Modal */
+    #downloadModal {
+      display: none;
+      position: fixed;
+      z-index: 2001;
+      left: 0; top: 0; width: 100vw; height: 100vh;
+      background: var(--backdrop);
+      align-items: center;
+      justify-content: center;
+    }
+    #downloadModal.active {
+      display: flex;
+    }
+    #downloadModal .modal-content {
+      background: var(--surface-light);
+      color: var(--text);
+      padding: 26px 24px 18px 24px;
+      border-radius: 10px;
+      box-shadow: var(--shadow-menu);
+      max-width: 380px;
+      width: 98vw;
+      text-align: center;
+      border: 1px solid var(--border);
+      animation: fadeInMenu 0.15s;
+    }
+    #downloadModal .modal-content p {
+      margin: 0 0 14px 0;
+      font-size: 1.01rem;
+      color: var(--primary);
+      line-height: 1.5;
+    }
+    #downloadModal .modal-content .modal-btns {
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+    }
+    #downloadModal .modal-content button {
+      padding: 7px 22px;
+      border-radius: 7px;
+      border: none;
+      font-size: 1.02rem;
+      cursor: pointer;
+      margin-top: 6px;
+      transition: background 0.18s, color 0.18s;
+    }
+    #downloadModal .modal-content .close-btn {
+      background: var(--surface);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    #downloadModal .modal-content .close-btn:hover {
+      background: var(--danger);
+      color: white;
+      border-color: var(--danger);
+    }
+    #downloadModal .modal-content .download-btn {
+      background: var(--primary);
+      color: #fff;
+    }
+    #downloadModal .modal-content .download-btn:hover {
+      background: var(--primary-dark);
+    }
+    /* Embed preview */
+    #embedPreview {
+      display: none;
+      position: fixed;
+      z-index: 2002;
+      left: 0; top: 0; width: 100vw; height: 100vh;
+      background: var(--backdrop);
+      align-items: center;
+      justify-content: center;
+    }
+    #embedPreview.active {
+      display: flex;
+    }
+    #embedPreview .modal-content {
+      background: var(--surface-light);
+      color: var(--text);
+      padding: 10px 10px;
+      border-radius: 10px;
+      box-shadow: var(--shadow-menu);
+      max-width: 96vw;
+      width: 96vw;
+      max-height: 92vh;
+      text-align: center;
+      border: 1px solid var(--border);
+      animation: fadeInMenu 0.15s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    #embedPreview .modal-content .close-btn {
+      padding: 6px 18px;
+      border-radius: 7px;
+      background: var(--surface);
+      color: var(--text);
+      border: 1px solid var(--border);
+      margin-bottom: 10px;
+      cursor: pointer;
+      align-self: flex-end;
+      margin-right: 8px;
+      margin-top: 4px;
+      transition: background 0.18s, color 0.18s;
+    }
+    #embedPreview .modal-content .close-btn:hover {
+      background: var(--danger);
+      color: white;
+      border-color: var(--danger);
+    }
+    #embedPreview .modal-content embed {
+      width: 90vw;
+      height: 80vh;
+      border: 1px solid var(--border);
+      background: #fff;
+      border-radius: 8px;
+      margin-bottom: 6px;
+    }
     @media (max-width: 600px) {
       nav {
         flex-direction: column;
@@ -229,8 +346,13 @@
         min-width: unset;
         width: 95vw;
       }
-      #dataModal .modal-content {
+      #dataModal .modal-content,
+      #downloadModal .modal-content {
         padding: 20px 10px 10px 10px;
+      }
+      #embedPreview .modal-content embed {
+        width: 95vw;
+        height: 60vh;
       }
     }
     html[data-theme="light"] {
@@ -278,7 +400,9 @@
       <button class="menu-btn aboutblank">Open in <b>about:blank</b></button>
       <button class="menu-btn blob">Open in <b>blob:</b></button>
       <button class="menu-btn data">Open in <b>data:</b></button>
-      <button class="menu-btn copydataurl">Copy Data URL</button>
+      <button class="menu-btn copydataurl">Copy <b>data:</b> or <b>data://</b> URL</button>
+      <button class="menu-btn downloadhtml">Download HTML file</button>
+      <button class="menu-btn embedhtml">Embed (Preview with <b>embed src</b>)</button>
       <button class="menu-btn originalurl">Open Original URL</button>
     </div>
   </div>
@@ -288,7 +412,9 @@
       <button class="menu-btn aboutblank">Open in <b>about:blank</b></button>
       <button class="menu-btn blob">Open in <b>blob:</b></button>
       <button class="menu-btn data">Open in <b>data:</b></button>
-      <button class="menu-btn copydataurl">Copy Data URL</button>
+      <button class="menu-btn copydataurl">Copy <b>data:</b> or <b>data://</b> URL</button>
+      <button class="menu-btn downloadhtml">Download HTML file</button>
+      <button class="menu-btn embedhtml">Embed (Preview with <b>embed src</b>)</button>
       <button class="menu-btn originalurl">Open Original URL</button>
     </div>
   </div>
@@ -298,7 +424,9 @@
       <button class="menu-btn aboutblank">Open in <b>about:blank</b></button>
       <button class="menu-btn blob">Open in <b>blob:</b></button>
       <button class="menu-btn data">Open in <b>data:</b></button>
-      <button class="menu-btn copydataurl">Copy Data URL</button>
+      <button class="menu-btn copydataurl">Copy <b>data:</b> or <b>data://</b> URL</button>
+      <button class="menu-btn downloadhtml">Download HTML file</button>
+      <button class="menu-btn embedhtml">Embed (Preview with <b>embed src</b>)</button>
       <button class="menu-btn originalurl">Open Original URL</button>
     </div>
   </div>
@@ -319,7 +447,25 @@
       </div>
     </div>
   </div>
-
+  <!-- Modal for downloading HTML -->
+  <div id="downloadModal">
+    <div class="modal-content">
+      <p>
+        Download this HTML file?
+      </p>
+      <div class="modal-btns">
+        <button class="download-btn">Download</button>
+        <button class="close-btn">Cancel</button>
+      </div>
+    </div>
+  </div>
+  <!-- Modal for embed preview -->
+  <div id="embedPreview">
+    <div class="modal-content">
+      <button class="close-btn">Close</button>
+      <embed src="" type="text/html" />
+    </div>
+  </div>
   <script>
     // Theme Switch (localStorage)
     const themeToggle = document.getElementById('themeToggle');
@@ -340,23 +486,48 @@
       setTheme(!isDark);
     };
 
-    // Modal logic
     let pendingDataUrl = null;
+    let pendingDownloadBlob = null;
+    let pendingEmbedUrl = null;
+
     function showDataModal(dataUrl) {
       pendingDataUrl = dataUrl;
       document.getElementById('dataModal').classList.add('active');
-      // Focus Yes button for accessibility
       document.querySelector('#dataModal .yes-btn').focus();
     }
     function hideDataModal() {
       pendingDataUrl = null;
       document.getElementById('dataModal').classList.remove('active');
     }
+    function showDownloadModal(blob) {
+      pendingDownloadBlob = blob;
+      document.getElementById('downloadModal').classList.add('active');
+      document.querySelector('#downloadModal .download-btn').focus();
+    }
+    function hideDownloadModal() {
+      pendingDownloadBlob = null;
+      document.getElementById('downloadModal').classList.remove('active');
+    }
+    function showEmbedPreview(url) {
+      pendingEmbedUrl = url;
+      document.getElementById('embedPreview').classList.add('active');
+      const embed = document.querySelector('#embedPreview embed');
+      embed.src = url;
+      embed.focus();
+    }
+    function hideEmbedPreview() {
+      pendingEmbedUrl = null;
+      document.getElementById('embedPreview').classList.remove('active');
+      document.querySelector('#embedPreview embed').src = '';
+    }
+
     document.addEventListener("DOMContentLoaded", function(){
+      // Data modal
       document.querySelectorAll('#dataModal .yes-btn').forEach(btn => {
         btn.onclick = function() {
           if(pendingDataUrl) {
-            window.location.href = pendingDataUrl;
+            // Use window.location.assign so it replaces current tab (no about:blank)
+            window.location.assign(pendingDataUrl);
           }
           hideDataModal();
         };
@@ -366,21 +537,50 @@
           hideDataModal();
         };
       });
+      // Download modal
+      document.querySelectorAll('#downloadModal .download-btn').forEach(btn => {
+        btn.onclick = function() {
+          if (pendingDownloadBlob) {
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(pendingDownloadBlob);
+            a.download = 'site.html';
+            document.body.appendChild(a);
+            a.click();
+            setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+            setTimeout(()=>a.remove(), 400);
+          }
+          hideDownloadModal();
+        }
+      });
+      document.querySelectorAll('#downloadModal .close-btn').forEach(btn => {
+        btn.onclick = function() {
+          hideDownloadModal();
+        };
+      });
+      // Embed preview modal
+      document.querySelectorAll('#embedPreview .close-btn').forEach(btn => {
+        btn.onclick = function() {
+          hideEmbedPreview();
+        };
+      });
       document.addEventListener('keydown', function(e){
         if(document.getElementById('dataModal').classList.contains('active') && e.key === 'Escape'){
           hideDataModal();
         }
+        if(document.getElementById('downloadModal').classList.contains('active') && e.key === 'Escape'){
+          hideDownloadModal();
+        }
+        if(document.getElementById('embedPreview').classList.contains('active') && e.key === 'Escape'){
+          hideEmbedPreview();
+        }
       });
-    });
-
-    document.addEventListener("DOMContentLoaded", function(){
+      // Menu logic
       document.querySelectorAll('.chatroom-link').forEach(function(link) {
         link.addEventListener('click', function(e){
           e.preventDefault();
           showMenu(link);
         });
       });
-
       function showMenu(link) {
         document.querySelectorAll('.menu').forEach(function(menu) {
           menu.style.display = 'none';
@@ -411,7 +611,6 @@
             .then(resp => resp.text())
             .then(html => {
               const dataUrl = 'data:text/html;charset=utf-8,' + encodeURIComponent(html);
-              // Show modal dialog before redirecting!
               showDataModal(dataUrl);
               menu.style.display = 'none';
             }).catch(()=>{alert("Could not fetch content for data: link.");menu.style.display="none";});
@@ -421,9 +620,39 @@
           fetch(url)
             .then(resp => resp.text())
             .then(html => {
-              const dataUrl = 'data:text/html;charset=utf-8,' + encodeURIComponent(html);
-              navigator.clipboard.writeText(dataUrl);
-              alert("Data URL copied! Paste it into a new tab's address bar if you want.");
+              const realDataUrl = 'data:text/html;charset=utf-8,' + encodeURIComponent(html);
+              // Show prompt to pick which one to copy: data: or data://
+              if (window.confirm("Press OK to copy the standard data: URL, or Cancel to copy a fake data:// URL.")) {
+                navigator.clipboard.writeText(realDataUrl);
+                alert("Copied data: URL!");
+              } else {
+                // Not valid, but for user, we can generate it
+                const fakeDataUrl = 'data://' + realDataUrl.slice(5);
+                navigator.clipboard.writeText(fakeDataUrl);
+                alert("Copied fake data:// URL! (not supported by browsers)");
+              }
+              menu.style.display = 'none';
+            });
+        };
+        menu.querySelector('.downloadhtml').onclick = function(ev){
+          ev.stopPropagation();
+          fetch(url)
+            .then(resp => resp.text())
+            .then(html => {
+              const blob = new Blob([html], {type:'text/html'});
+              showDownloadModal(blob);
+              menu.style.display = 'none';
+            });
+        };
+        menu.querySelector('.embedhtml').onclick = function(ev){
+          ev.stopPropagation();
+          fetch(url)
+            .then(resp => resp.text())
+            .then(html => {
+              // Use blob URL for embed (data: URLs in embed can cause issues for large HTML)
+              const blob = new Blob([html], {type:'text/html'});
+              const blobUrl = URL.createObjectURL(blob);
+              showEmbedPreview(blobUrl);
               menu.style.display = 'none';
             });
         };
